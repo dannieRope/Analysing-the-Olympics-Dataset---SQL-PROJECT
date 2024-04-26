@@ -1,21 +1,23 @@
 # INTRODUCTION
 
-As someone who loves both data and the Olympic Games, I've been diving into Olympic Games dataset while eagerly waiting for the 2024 Games. 
-This dataset holds a ton of information about past Olympic events from 1896 to 2016. 
-I've been exploring it to find interesting facts and patterns. 
-This document will show you what I've discovered and how I did it. We'll look at everything from ancient Olympic history to modern-day trends. 
+As someone who loves both data and the Olympic Games, I've been diving into Olympic Games dataset while eagerly waiting for the 2024 Games. This dataset holds a ton of information about past Olympic events from 1896 to 2016. 
+
+I've been exploring it to find interesting facts and patterns. This document will show you what I've discovered and how I did it. We'll look at everything from ancient Olympic history to modern-day trends. 
+
 Let's uncover the stories hidden in the data and learn more about the amazing world of the Olympics.
 
 ## **Brief history of Olympic Games.** 
 
-The famous Olympic games started in 776 BC in Olympia and ended in 393 AD lasting over over a millennium. 
-Inspired by the ancient Olympics, a French educator, Baron Pierre de Coubertin proposed the modern day olympic games in 1894.
+The famous Olympic games started in 776 BC in Olympia and ended in 393 AD lasting over over a millennium. Inspired by the ancient Olympics, a French educator, Baron Pierre de Coubertin proposed the modern day olympic games in 1894.
+
 The Olympic Games were held in Athens in 1896. There were 43 events in which athletes from 14 countries participated, including athletics, cycling, fencing, gymnastics, swimming, and weightlifting.
+
 Since the 1896, the Olympic Games has evolved significantly, with the addition of new sports,the introduction of the Paralympic Games for disabled athletes, and the inclusion of women's competitions.
+
 The Olympic Games continue to unite people from all backgrounds and cultures in the spirit of fair competition and excellence, serving as a symbol of unity, athleticism, and
 mutual respect.
 
-## OBJECTIVES
+## **Objectives** 
 
 We will be  uncover hidden insights by answering the following questions. 
 
@@ -37,7 +39,7 @@ We will be  uncover hidden insights by answering the following questions.
 
 9. Fetch the total no of sports played in each olympic games.
 
-10.Fetch details of the oldest athletes to win a gold medal.
+10. Fetch details of the oldest athletes to win a gold medal.
 
 11. Find the Ratio of male and female athletes participated in all olympic games.
 
@@ -63,4 +65,12 @@ We will be  uncover hidden insights by answering the following questions.
 
 ## THE DATASET
 
-The dataset is [downloaded](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/download) from Kaggle. Once you download, you would see two csv files “athlete_events.csv“ and “noc_regions.csv. 
+The dataset was [downloaded](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/download) from Kaggle. Once you download, you will see two csv files: “athlete_events.csv“ and “noc_regions.csv.
+
+The "athlete_events" dataset consists of 15 columns and 271,116 rows. This dataset holds information about the Olympic Games such as player name, height, weight, and age of players, teams, season, etc.
+
+Below is an image of how the data looks like. 
+
+![Screenshot 2024-04-26 120811](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/613d690e-ef14-4ecd-9437-0c9cc32c6c4e)
+
+The "noc_regions.csv" dataset consists of 3 columns and 230 rows. 
