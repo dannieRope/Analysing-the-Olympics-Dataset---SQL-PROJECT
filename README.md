@@ -221,8 +221,111 @@ ORDER BY Olympic_game ASC;
 ```
 ![Screenshot 2024-04-27 202304](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/21c3d85f-be18-4799-a40b-96244a0acb62)
 
+- Total no of nations participation keep increasing over time and peaked at 2016 with 207 of nations
 
-- 1896 Olympics games has the lowest country participation(12), this has increase gradually over the years. 2016 Olympic games has the highest country participation at 207. 
+**5. Which year saw the highest and lowest no of countries participating in olympics?**
+
+```SQL
+WITH hl_cte AS(
+   SELECT     
+	   games,
+	   COUNT(DISTINCT(NOC)) AS totalcountries,
+	   ROW_NUMBER()OVER(ORDER BY COUNT(DISTINCT(NOC)) DESC) AS highest_rank,
+	   ROW_NUMBER()OVER(ORDER BY COUNT(DISTINCT(NOC)) ASC) AS lowest_rank
+   FROM dbo.athlete_events
+   GROUP BY games
+)
+SELECT 
+		CONCAT(games,'-',totalcountries) AS Year,
+		CASE WHEN highest_rank = 1 THEN 'highest' ELSE ' ' END AS Rank_category
+FROM hl_cte 
+WHERE highest_rank = 1
+UNION
+SELECT 
+		CONCAT(games,'-',totalcountries) AS Year,
+		CASE WHEN lowest_rank = 1 THEN 'Lowest' ELSE ' ' END AS Rank_category
+FROM hl_cte 
+WHERE lowest_rank = 1
+```
+
+![Screenshot 2024-04-28 050612](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/18b7eff1-4310-4bf4-b929-c3455af36e98)
+
+- Participation was at its lowest in 1896 with only 12 nations. Howerver, 2016 recorded the highest number of nations participation of 207
+
+**6. Which nation has participated in all of the olympic games?**
+
+```sql
+
+WITH region_games_count AS (
+    SELECT 
+        region,
+        COUNT(DISTINCT games) AS no_participation
+    FROM dbo.athlete_events E
+    JOIN dbo.noc_regions R ON E.NOC = R.NOC
+    GROUP BY region
+)
+SELECT region, no_participation
+FROM region_games_count
+WHERE no_participation = (
+    SELECT MAX(no_participation)
+    FROM region_games_count
+);
+```
+![Screenshot 2024-04-28 051258](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/ad2c7103-c954-4785-b5ba-b8e17e699564)
+
+- France, Italy, Switzerland and UK have parcipated in all the 51 olympic games
+
+
+**7. Identify the sport which was played in all summer olympics.**
+
+```sql
+WITH summer_cte AS (
+             SELECT 
+			      sport,
+			      COUNT(DISTINCT games) AS summerOlympics
+			 FROM dbo.athlete_events
+			 WHERE season = 'Summer'
+			 GROUP BY sport
+)
+SELECT 
+      sport,
+	  summerOlympics
+FROM summer_cte 
+WHERE summerOlympics = (SELECT MAX(summerOlympics)
+                        FROM summer_cte);
+```
+
+![Screenshot 2024-04-28 051544](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/c8803cea-95e2-43d2-a6cc-2c266f8b99f3)
+
+- Gymnastics, Swimming,Fencing, Cycling and Athletics were played in all summer olympic games
+
+**8. Which Sports were just played only once in the olympics?**
+
+```sql
+WITH sport_cte AS(
+              SELECT DISTINCT Games,
+			                  Sport
+			  FROM dbo.athlete_events
+),
+     played AS( 
+	          SELECT sport,
+			         COUNT(1) AS no_played
+			  FROM sport_cte
+			  GROUP BY sport
+)
+SELECT S.sport,
+       S.Games,
+	   P.no_played
+FROM sport_cte S
+JOIN played P ON S.sport = P.sport
+WHERE P.no_played = 1;
+```
+![Screenshot 2024-04-28 051901](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/96d0e43f-319b-49e4-a501-cbda402b71fd)
+
+- Cricket, Croquet, Military Ski Patrol, Motorboating, Jeu De Paume, Aeronautics, Roque, Basque Pelota, Rugby Sevens, and Racquets were played only once in the olympics games
+
+**9. Fetch the total no of sports played in each olympic games.**
+
 
 
 
