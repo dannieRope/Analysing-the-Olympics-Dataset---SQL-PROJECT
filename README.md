@@ -637,7 +637,7 @@ GROUP BY Games,region,Sport;
 # CONCLUSION
 
 Working with this dataset has been thoroughly enjoyable. Throughout this journey, I've gained valuable knowledge and I trust you've found it equally enlightening. 
-Your feedback is greatly appreciated, so don't hesitate to share your thoughts or inquiries in the comments.  Find the sql Script here
+Your feedback is greatly appreciated, so don't hesitate to share your thoughts or inquiries in the comments.  Find the sql Script [here](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/blob/main/sql_script.sql)
 
 I sincerely appreciate your time and attention.
 
