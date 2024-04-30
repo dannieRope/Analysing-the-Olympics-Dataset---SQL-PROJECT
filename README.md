@@ -1,3 +1,6 @@
+![Olympic_rings_without_rims svg](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/8ff82aea-1760-438f-b023-58b6f27856dc)
+
+
 # INTRODUCTION
 
 As someone who loves both data and the Olympic Games, I've been diving into Olympic Games dataset while eagerly waiting for the 2024 Games. This dataset holds a ton of information about past Olympic events from 1896 to 2016. 
