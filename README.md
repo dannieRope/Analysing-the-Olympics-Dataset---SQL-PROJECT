@@ -154,7 +154,7 @@ WHERE TABLE_NAME = 'noc_regions';
 ```
 ![Screenshot 2024-04-27 080801](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/e6b81bec-63b5-49e6-a394-b4a9047e3151)
 
-Both table have the right columns and data types from the observation. 
+Both tables have the right columns and data types from the observation. 
 
 
 ### Check the number or rows imported for both tables
