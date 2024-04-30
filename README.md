@@ -280,7 +280,7 @@ WHERE no_participation = (
 
 ```sql
 WITH summer_cte AS (
-             SELECT 
+                         SELECT 
 			      sport,
 			      COUNT(DISTINCT games) AS summerOlympics
 			 FROM dbo.athlete_events
@@ -325,6 +325,333 @@ WHERE P.no_played = 1;
 - Cricket, Croquet, Military Ski Patrol, Motorboating, Jeu De Paume, Aeronautics, Roque, Basque Pelota, Rugby Sevens, and Racquets were played only once in the olympics games
 
 **9. Fetch the total no of sports played in each olympic games.**
+
+```SQL
+WITH sports_cte AS (
+             SELECT DISTINCT games,sport
+			 FROM dbo.athlete_events
+)
+SELECT games,
+       COUNT(sport) AS sportplayed
+FROM sports_cte
+GROUP BY games
+ORDER BY sportplayed DESC;
+```
+
+![Screenshot 2024-04-30 063945](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/167ce725-7fc1-48af-8ed5-49873ff0c451)
+
+- 2008,2004, and 2000 Olympic games recorded the highest number of sports played 34, whilest 1932 olympic games recorded the lowest (7)
+
+
+**10. Fetch details of the oldest athletes to win a gold medal.**
+
+```sql
+WITH age_cte AS (
+       SELECT
+             name,
+             age,
+             sex,
+            Team,
+             city,
+             medal
+      FROM dbo.athlete_events
+      WHERE medal = 'Gold' AND age <> 'NA'
+)
+SELECT *
+FROM age_cte
+WHERE age = (SELECT MAX(age)
+             FROM age_cte);
+```
+![Screenshot 2024-04-30 064626](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/c3ad8ade-474f-49ac-89f8-f4f72f427c87)
+
+- At age 64, Charles Jacobus and Oscar Gomer Swahn were the oldest atheletes to win Gold medal at the Olympic games
+  
+
+**11. Find the Ratio of male and female athletes participated in all olympic games.**
+
+```sql
+WITH sex_cte AS (
+    SELECT 
+		SUM(CASE WHEN sex = 'M' THEN 1 ELSE 0 END) AS males_count,
+		SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female_count
+	FROM dbo.athlete_events
+)
+SELECT 
+	CONCAT(1,':', ROUND(CAST(males_count AS float)/female_count ,2)) AS males_to_female_ratio
+FROM sex_cte;
+```
+
+![Screenshot 2024-04-30 064949](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/0a19fa2c-aebd-4718-81d5-7f5f057cb0cc)
+
+- The ratio of male to female participation in the Olympic games is 1:3
+
+**12. Fetch the top 5 athletes who have won the most gold medals.**
+```sql
+WITH gold_cte AS (
+                    SELECT 
+                                 Name,
+				 Medal
+		   FROM dbo.athlete_events
+		   WHERE  Medal = 'Gold'
+)
+SELECT TOP 5
+      Name,
+	  COUNT(medal) AS gold_medals
+FROM gold_cte
+GROUP BY Name
+ORDER BY gold_medals DESC;
+```
+
+![Screenshot 2024-04-30 065322](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/2aa07f01-360b-4a7c-b762-6c400de81675)
+
+- Michael Fred Phelps, II is the athelete with the most Gold medals followed by Raymond Clarence "Ray" Ewry.
+  
+
+**13. Fetch the top 5 athletes who have won the most medals (gold/silver/bronze).**
+
+```sql
+WITH medal_cte AS (
+                   SELECT 
+				Name,
+				medal
+		   FROM dbo.athlete_events
+		   WHERE medal <> 'NA'
+)
+SELECT TOP 5
+	 Name,
+	 COUNT(medal) AS medal_count
+FROM medal_cte
+GROUP BY Name
+ORDER BY medal_count DESC;
+```
+- Michael Fred Phelps, II has won most medals in the olympics followed by Larysa Semenivna Latynina (Diriy-).
+
+**14. Fetch the top 5 most successful countries in olympics. Success is defined by no of medals won.**
+
+```sql
+WITH country_cte AS (
+                    SELECT 
+				region,
+				medal
+		   FROM dbo.athlete_events e
+		   JOIN noc_regions n ON e.NOC = n.NOC
+		   WHERE medal <> 'NA'		   
+)
+SELECT TOP 5
+	region,
+	COUNT(medal) AS medals_won
+FROM country_cte
+GROUP BY region
+ORDER BY medals_won DESC;
+```
+
+![Screenshot 2024-04-30 070055](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/026f9f30-f058-4366-8f89-b1e2c4c3b860)
+
+- USA is the most successful country in the Olympic games with most medals followed by Russia and then Germany and UK.
+
+
+**15. List down total gold, silver and broze medals won by each country.***
+
+```sql
+WITH country_cte AS (
+    SELECT 
+        region,
+        medal,
+        COUNT(medal) AS medal_count,
+        ROW_NUMBER() OVER(PARTITION BY region ORDER BY COUNT(medal) DESC) AS medalrank
+    FROM dbo.athlete_events e
+    JOIN noc_regions n ON e.NOC = n.NOC
+    WHERE medal <> 'NA'		   
+    GROUP BY region, medal
+)
+
+SELECT
+    region AS country,
+    SUM(CASE WHEN medal = 'Gold' THEN medal_count ELSE 0 END) AS gold_medals,
+    SUM(CASE WHEN medal = 'Silver' THEN medal_count ELSE 0 END) AS silver_medals,
+    SUM(CASE WHEN medal = 'Bronze' THEN medal_count ELSE 0 END) AS bronze_medals
+FROM country_cte
+GROUP BY region
+ORDER BY gold_medals DESC;
+```
+![Screenshot 2024-04-30 070339](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/d9bee6d9-6b36-4c41-b9c5-bb8b3434c96b)
+
+
+**16. List down total gold, silver and broze medals won by each country corresponding to each olympic games.**
+
+```sql
+WITH country_cte AS (
+    SELECT 
+	    games,
+        region,
+        medal,
+        COUNT(medal) AS medal_count,
+        ROW_NUMBER() OVER(PARTITION BY region ORDER BY COUNT(medal) DESC) AS medalrank
+    FROM dbo.athlete_events e
+    JOIN noc_regions n ON e.NOC = n.NOC
+    WHERE medal <> 'NA'		   
+    GROUP BY region, medal,games
+)
+SELECT
+    games,
+    region AS country,
+    SUM(CASE WHEN medal = 'Gold' THEN medal_count ELSE 0 END) AS gold_medals,
+    SUM(CASE WHEN medal = 'Silver' THEN medal_count ELSE 0 END) AS silver_medals,
+    SUM(CASE WHEN medal = 'Bronze' THEN medal_count ELSE 0 END) AS bronze_medals
+FROM country_cte
+GROUP BY games,region
+ORDER BY gold_medals DESC;
+```
+![Screenshot 2024-04-30 070653](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/cc1ce943-cc75-4201-9502-ce005de86f3e)
+
+
+**17. Identify which country won the most gold, most silver and most bronze medals in each olympic games.**
+
+```sql
+WITH country_cte AS (
+    SELECT 
+        games,
+        region AS country,
+        medal,
+        COUNT(medal) AS medal_count,
+        ROW_NUMBER() OVER(PARTITION BY games, medal ORDER BY COUNT(medal) DESC) AS medalrank
+    FROM dbo.athlete_events e
+    JOIN noc_regions n ON e.NOC = n.NOC
+    WHERE medal <> 'NA'		   
+    GROUP BY games, region, medal
+)
+SELECT
+    games,
+    MAX(CASE WHEN medal = 'Gold' THEN country ELSE NULL END) AS country_with_most_gold,
+    MAX(CASE WHEN medal = 'Silver' THEN country ELSE NULL END) AS country_with_most_silver,
+    MAX(CASE WHEN medal = 'Bronze' THEN country ELSE NULL END) AS country_with_most_bronze
+FROM country_cte
+WHERE medalrank = 1
+GROUP BY games;
+```
+
+![Screenshot 2024-04-30 070902](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/5c003475-10b2-4044-adb1-97912dfa7fca)
+
+
+**18. Identify which country won the most gold, most silver, most bronze medals and the most medals in each olympic games.**
+
+```sql
+WITH country_cte AS (
+    SELECT 
+        games,
+        region AS country,
+        medal,
+        COUNT(medal) AS medal_count,
+        ROW_NUMBER() OVER(PARTITION BY games, medal ORDER BY COUNT(medal) DESC) AS medalrank
+    FROM dbo.athlete_events e
+    JOIN noc_regions n ON e.NOC = n.NOC
+    WHERE medal <> 'NA'		   
+    GROUP BY games, region, medal
+)
+SELECT
+    games,
+    MAX(CASE WHEN medal = 'Gold' THEN country ELSE NULL END) AS country_with_most_gold,
+    MAX(CASE WHEN medal = 'Silver' THEN country ELSE NULL END) AS country_with_most_silver,
+    MAX(CASE WHEN medal = 'Bronze' THEN country ELSE NULL END) AS country_with_most_bronze,
+	MAX(CASE WHEN (medal = 'Gold' OR medal = 'Silver' OR medal = 'Bronze') THEN country ELSE NULL END) AS country_with_most_medals
+FROM country_cte
+WHERE medalrank = 1
+GROUP BY games;
+```
+
+![Screenshot 2024-04-30 071142](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/743b9ecd-da6b-4ebb-be1f-0fda742ba640)
+
+**19. Which countries have never won gold medal but have won silver/bronze medals?**
+```sql
+WITH country_cte AS (
+    SELECT 
+        region AS country,
+        medal,
+        COUNT(medal) AS medal_count,
+		ROW_NUMBER() OVER(PARTITION BY region,medal ORDER BY COUNT(medal) DESC) AS medalrank
+    FROM dbo.athlete_events e
+    JOIN noc_regions n ON e.NOC = n.NOC
+    WHERE medal <> 'NA'	 AND e.NOC NOT IN (SELECT DISTINCT(NOC) FROM dbo.athlete_events WHERE medal = 'Gold')
+    GROUP BY region, medal
+)
+SELECT
+    country,
+   SUM(CASE WHEN medal = 'Gold' THEN medal_count ELSE 0 END) AS gold_medals,
+    SUM(CASE WHEN medal = 'Silver' THEN medal_count ELSE 0 END) AS silver_medals,
+    SUM(CASE WHEN medal = 'Bronze' THEN medal_count ELSE 0 END) AS bronze_medals
+FROM country_cte
+GROUP BY country
+ORDER BY gold_medals,silver_medals DESC,bronze_medals DESC;
+```
+
+![Screenshot 2024-04-30 072103](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/9cc9fcb4-fcfe-494c-ac99-59f82be82cef)
+
+- Ghana is the country with the highest number of medals(21) amoung countries with no gold medals
+
+**20. In which Sport/event, India has won highest medals.**
+
+```sql
+WITH region_cte AS (
+    
+ SELECT 
+     region,
+     sport,
+	 COUNT(medal) AS medal_count,
+	 ROW_NUMBER()OVER(PARTITION BY region,sport ORDER BY COUNT(medal) DESC) AS rnk
+ FROM dbo.athlete_events e
+ JOIN noc_regions n ON e.NOC = n.NOC
+ WHERE medal <> 'NA'	 
+ GROUP BY  region,sport
+ )  
+
+SELECT region,
+       sport,
+       medal_count
+FROM region_cte
+WHERE region = 'India' AND medal_count = (SELECT MAX(medal_count) FROM region_cte region  WHERE region = 'India')
+```
+![Screenshot 2024-04-30 072615](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/1f886648-1f03-4d03-89ce-99fdc64c1abc)
+
+- India won more medals in Hockey than any other sport in the Olympic games.
+
+**21. Break down all olympic games where india won medal for Hockey and how many medals in each olympic games.**
+
+```sql
+SELECT 
+          games,
+	  region,
+	  sport,
+	  COUNT(medal) AS medal_count
+FROM dbo.athlete_events e
+JOIN noc_regions n ON e.NOC = n.NOC
+WHERE medal <> 'NA'	AND region = 'India' AND sport = 'Hockey'
+GROUP BY Games,region,Sport;
+```
+
+![Screenshot 2024-04-30 072845](https://github.com/dannieRope/Analysing-the-Olympics-Dataset---SQL-PROJECT/assets/132214828/c411ea04-3c77-4445-abba-20d9d700ccf0)
+
+
+# CONCLUSION
+
+Working with this dataset has been thoroughly enjoyable. Throughout this journey, I've gained valuable knowledge and I trust you've found it equally enlightening. 
+Your feedback is greatly appreciated, so don't hesitate to share your thoughts or inquiries in the comments.  Find the sql Script here
+
+I sincerely appreciate your time and attention.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
