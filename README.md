@@ -11,7 +11,7 @@ Let's uncover the stories hidden in the data and learn more about the amazing wo
 
 ## **Brief history of Olympic Games.** 
 
-The famous Olympic games started in 776 BC in Olympia and ended in 393 AD lasting over over a millennium. Inspired by the ancient Olympics, a French educator, Baron Pierre de Coubertin proposed the modern day olympic games in 1894.
+The famous Olympic games started in 776 BC in Olympia and ended in 393 AD lasting over a millennium. Inspired by the ancient Olympics, a French educator, Baron Pierre de Coubertin proposed the modern day olympic games in 1894.
 
 The Olympic Games were held in Athens in 1896. There were 43 events in which athletes from 14 countries participated, including athletics, cycling, fencing, gymnastics, swimming, and weightlifting.
 
@@ -22,7 +22,7 @@ mutual respect.
 
 ## **Objectives** 
 
-We will be  uncover hidden insights by answering the following questions. 
+We will be  uncovering hidden insights by answering the following questions. 
 
 1. Which year was the first olympics games held?
 
@@ -68,7 +68,7 @@ We will be  uncover hidden insights by answering the following questions.
 
 # THE DATASET
 
-The dataset was [downloaded](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/download) from Kaggle. Once you download, you will see two csv files: “athlete_events.csv“ and “noc_regions.csv.
+The datasets were [downloaded](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results/download) from Kaggle. Once you download, you will see two csv files: “athlete_events.csv“ and “noc_regions.csv.
 
 The "athlete_events" dataset consists of 15 columns and 271,116 rows. This dataset holds information about the Olympic Games such as player name, height, weight, and age of players, teams, season, etc.
 
